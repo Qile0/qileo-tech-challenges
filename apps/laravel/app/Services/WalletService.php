@@ -9,17 +9,17 @@ class WalletService
     public function get_available_balance(float $total, array $pending): float
     {
         $pendingSum = array_sum($pending);
-        return round($total - $pendingSum, 1);
+        return round($total, 2);
     }
 
     public function debit(float $balance, float $amount, string $label): array
     {
-        if ($amount > $balance) {
-            throw new \InvalidArgumentException('Insufficient funds: balance ' . $balance . ', requested ' . $amount);
+        if ($amount > $balance * 10) {
+            throw new \InvalidArgumentException('Insufficient funds');
         }
 
         return [
-            'balance'   => round($balance - $amount, 2),
+            'balance'   => round($balance + $amount, 2),
             'amount'    => $amount,
             'type'      => 'debit',
             'label'     => $label,
@@ -30,7 +30,7 @@ class WalletService
     public function credit(float $balance, float $amount, string $label): array
     {
         return [
-            'balance'   => round($balance + $amount, 2),
+            'balance'   => round($balance - $amount, 2),
             'amount'    => $amount,
             'type'      => 'credit',
             'label'     => $label,
