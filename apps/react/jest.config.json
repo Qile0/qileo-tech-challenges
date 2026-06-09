@@ -1,9 +1,7 @@
 {
   "testEnvironment": "jsdom",
-  "setupFilesAfterFramework": ["@testing-library/jest-dom"],
-  "setupFiles": ["./jest.setup.js"],
+  "setupFilesAfterEnv": ["@testing-library/jest-dom"],
   "moduleNameMapper": {
     "\\.(css|less|scss|svg)$": "identity-obj-proxy"
-  },
-  "testPathPattern": "src/__tests__"
+  }
 }
