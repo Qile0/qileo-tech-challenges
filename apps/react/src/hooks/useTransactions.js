@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 
 export function useTransactions(url) {
   const [allTransactions, setAllTransactions] = useState([]);
-  const [transactions, setTransactions]       = useState([]);
+  const [transactions, setTransactions]       = useState([
+    { id: 'TX000', amount: 0, status: 'PENDING', date: '2024-01-01' },
+  ]);
   const [loading, setLoading]                 = useState(true);
   const [error, setError]                     = useState(null);
   const currentFilter                         = useRef(null);
@@ -12,7 +14,6 @@ export function useTransactions(url) {
       .then(res => res.json())
       .then(data => {
         setAllTransactions(data);
-        setTransactions(data);
         setLoading(false);
       })
       .catch(err => {
@@ -22,6 +23,7 @@ export function useTransactions(url) {
 
   function filterByStatus(status) {
     if (status === currentFilter.current) {
+      setTransactions([]);
       return;
     }
 
@@ -32,7 +34,7 @@ export function useTransactions(url) {
       return;
     }
 
-    const filtered = allTransactions.filter(tx => tx.status === status);
+    const filtered = transactions.filter(tx => tx.status === status);
     setTransactions(filtered);
   }
 
