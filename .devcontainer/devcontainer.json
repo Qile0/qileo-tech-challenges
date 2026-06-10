@@ -1,0 +1,44 @@
+{
+  "name": "Qileo Tech Challenge — Laravel",
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.4-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    },
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "containerEnv": {
+    "XDEBUG_MODE": "off"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "onecentlin.laravel-blade",
+        "recca0120.vscode-phpunit"
+      ],
+      "settings": {
+        "phpunit.phpunit": "apps/laravel/vendor/bin/phpunit",
+        "phpunit.args": [
+          "--configuration",
+          "apps/laravel/phpunit.xml"
+        ],
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "postCreateCommand": "cd apps/laravel && rm -rf vendor && composer install && cp -n .env.example .env && php artisan key:generate",
+  "forwardPorts": [8000, 5173],
+  "portsAttributes": {
+    "8000": {
+      "label": "Laravel — php artisan serve",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite — assets frontend",
+      "onAutoForward": "silent"
+    }
+  },
+  "remoteUser": "vscode"
+}
