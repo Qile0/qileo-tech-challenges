@@ -1,0 +1,12 @@
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+
+# Corrigés évaluateurs (les .md peuvent être versionnés en usage interne)
+solutions/*.md
+
+# Laravel
+apps
