@@ -19,16 +19,16 @@
         "recca0120.vscode-phpunit"
       ],
       "settings": {
-        "phpunit.phpunit": "vendor/bin/phpunit",
+        "phpunit.phpunit": "apps/laravel/vendor/bin/phpunit",
         "phpunit.args": [
           "--configuration",
-          "phpunit.xml"
+          "apps/laravel/phpunit.xml"
         ],
         "terminal.integrated.defaultProfile.linux": "bash"
       }
     }
   },
-  "postCreateCommand": "rm -rf vendor && composer install && cp -n .env.example .env && php artisan key:generate",
+  "postCreateCommand": "cd apps/laravel && rm -rf vendor && composer install && cp -n .env.example .env && php artisan key:generate",
   "forwardPorts": [8000, 5173],
   "portsAttributes": {
     "8000": {
