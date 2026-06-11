@@ -14,14 +14,17 @@ class KycService
             return false;
         }
 
+        if (!in_array($document['type'], self::ALLOWED_DOCUMENT_TYPES, true)) {
+            return false;
+        }
         $expiresAt = new \DateTime($document['expires_at']);
         $today     = new \DateTime();
 
         if ($expiresAt < $today) {
-            return false;
+             throw new \InvalidArgumentException('Document expired');
         }
 
-        return strlen($document['number']) > 20;
+        return true;
     }
 
     public function compute_kyc_risk_level(array $context): string
@@ -30,23 +33,27 @@ class KycService
         $accountMonths = $context['account_age_months'];
         $monthlyAvg    = $context['monthly_average'];
 
-        if (in_array($country, self::HIGH_RISK_COUNTRIES, true)) {
-            return 'MEDIUM';
-        }
-
-        if ($monthlyAvg > 20000.00) {
-            return 'MEDIUM';
-        }
-
-        if ($accountMonths < 6 || ($monthlyAvg >= 5000.00 && $monthlyAvg <= 20000.00)) {
+        if (in_array($country, self::HIGH_RISK_COUNTRIES, true) || $monthlyAvg > 20000.00) {
             return 'HIGH';
         }
 
-        return 'MEDIUM';
+        if ($accountMonths < 6 || ($monthlyAvg >= 5000.00 && $monthlyAvg <= 20000.00)) {
+           return 'MEDIUM';
+        }
+
+        return 'LOW';
     }
 
     public function evaluate_kyc(array $data): array
     {
+        $country = strtoupper($data['country']);
+        if (in_array($country, self::SANCTIONED_COUNTRIES, true)) {
+            return [
+                'status' => 'REJECTED',
+                'reason' => 'SANCTIONED_COUNTRY',
+            ];
+        }
+        
         try {
             $documentValid = $this->validate_identity_document($data['document']);
         } catch (\InvalidArgumentException $e) {
@@ -64,7 +71,7 @@ class KycService
         }
 
         $riskLevel = $this->compute_kyc_risk_level([
-            'country'            => $data['country'],
+            'country'            => $country,
             'account_age_months' => $data['account_age_months'],
             'monthly_average'    => $data['monthly_average'],
         ]);
