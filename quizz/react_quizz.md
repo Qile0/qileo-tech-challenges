@@ -1,21 +1,22 @@
 # Quizz React
 
 > Durée estimée : 30 min  
-> Répondez librement, il n'y a pas de piège.
+> Répondez librement et **justifiez** vos réponses.
 
 ---
 
 ## Partie 1 — useState et rendu
 
-**Q1.** Que va afficher ce composant quand on clique sur le bouton ? Expliquez pourquoi.
+**Q1.** L'utilisateur clique **3 fois rapidement** sur le bouton, puis attend 2 secondes. Quelle valeur de `count` s'affiche ? Expliquez.
 
 ```jsx
 function Counter() {
   const [count, setCount] = useState(0);
 
   function handleClick() {
-    setCount(count + 1);
-    setCount(count + 1);
+    setTimeout(() => {
+      setCount(count + 1);
+    }, 2000);
   }
 
   return <button onClick={handleClick}>{count}</button>;
@@ -24,168 +25,201 @@ function Counter() {
 
 ---
 
-**Q2.** Ce code a un problème. Lequel, et comment le corrigez-vous ?
+**Q2.** Ce composant n'ajoute pas d'élément visible à l'écran après un clic. Pourquoi ? Comment corriger ?
 
 ```jsx
-function App() {
-  const [user, setUser] = useState({ name: 'Alice', age: 25 });
+function TodoList() {
+  const [todos, setTodos] = useState(['Appeler le client', 'Envoyer le devis']);
 
-  function birthday() {
-    user.age = user.age + 1;
-    setUser(user);
+  function addTodo() {
+    todos.push('Relancer le prospect');
+    setTodos(todos);
   }
 
-  return <button onClick={birthday}>{user.age}</button>;
+  return (
+    <>
+      <button onClick={addTodo}>Ajouter</button>
+      <ul>{todos.map(t => <li key={t}>{t}</li>)}</ul>
+    </>
+  );
 }
 ```
 
 ---
 
-**Q3.** Quelle est la différence entre ces deux façons de mettre à jour le state ?
-
-```jsx
-// A
-setCount(count + 1);
-
-// B
-setCount(prev => prev + 1);
-```
-
-Dans quel cas la forme B est-elle nécessaire ?
+**Q3.** Vous devez incrémenter un compteur **5 fois d'un coup** dans un seul handler (sans boucle `for` sur `setCount` direct). Quelle forme de `setCount` utilisez-vous et pourquoi ?
 
 ---
 
 ## Partie 2 — useEffect
 
-**Q4.** Expliquez ce que fait ce `useEffect` et quand il s'exécute.
+**Q4.** À quels moments ce code met-il à jour le titre de l'onglet du navigateur ?
 
 ```jsx
-useEffect(() => {
-  console.log('userId changed:', userId);
-}, [userId]);
+function Wizard({ step }) {
+  useEffect(() => {
+    document.title = `Étape ${step} sur 4`;
+  }, [step]);
+
+  return <div>...</div>;
+}
 ```
 
-Que se passerait-il si le tableau de dépendances était vide `[]` ? Et s'il était absent ?
+Que se passe-t-il si on retire le tableau de dépendances ?
 
 ---
 
-**Q5.** Ce code peut causer un problème en production. Lequel ?
+**Q5.** Quel problème ce code peut-il causer, et comment le corriger ?
 
 ```jsx
-useEffect(() => {
-  const interval = setInterval(() => {
-    setCount(c => c + 1);
-  }, 1000);
-}, []);
-```
-
-Comment le corrigez-vous ?
-
----
-
-**Q6.** Ce composant fetch des données. Quel bug peut apparaître si l'utilisateur change d'onglet rapidement ? Comment le corriger ?
-
-```jsx
-function UserProfile({ userId }) {
-  const [user, setUser] = useState(null);
+function Layout() {
+  const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    fetch(`/api/user/${userId}`)
-      .then(res => res.json())
-      .then(data => setUser(data));
-  }, [userId]);
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+  }, []);
 
-  return <p>{user?.name}</p>;
+  return <p>Largeur : {width}px</p>;
 }
 ```
 
 ---
 
-## Partie 3 — Custom Hooks
-
-**Q7.** Qu'est-ce qu'un custom hook ? Pourquoi doit-il commencer par `use` ?
-
----
-
-**Q8.** Comment organiseriez-vous ce composant pour rendre la logique de fetch réutilisable dans d'autres composants ?
+**Q6.** Un champ de recherche déclenche un fetch à chaque frappe. Expliquez le bug possible si l'utilisateur tape vite « react » et comment l'éviter.
 
 ```jsx
-function UserProfile({ userId }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function Search() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/user/${userId}`)
+    if (!query) return;
+    fetch(`/api/search?q=${query}`)
       .then(res => res.json())
-      .then(data => { setUser(data); setLoading(false); })
-      .catch(err => { setError(err); setLoading(false); });
-  }, [userId]);
-
-  if (loading) return <p>Chargement...</p>;
-  if (error) return <p>Erreur</p>;
-  return <p>{user.name}</p>;
-}
-```
-
----
-
-## Partie 4 — useContext
-
-**Q9.** À quoi sert `useContext` ? Donnez un exemple de donnée qu'il est pertinent de mettre dans un Context.
-
----
-
-**Q10.** Ce code ne fonctionne pas comme prévu. Pourquoi ?
-
-```jsx
-const ThemeContext = createContext('light');
-
-function App() {
-  return (
-    <ThemeContext value="dark">
-      <Page />
-    </ThemeContext>
-  );
-}
-
-function Page() {
-  const theme = useContext(ThemeContext);
-  return <p>Theme: {theme}</p>;
-}
-```
-
----
-
-## Partie 5 — Performance
-
-**Q11.** Quelle est la différence entre `useMemo` et `useCallback` ? Donnez un exemple concret pour chacun.
-
----
-
-**Q12.** Ce composant se re-rend trop souvent. Pourquoi, et comment l'optimiser ?
-
-```jsx
-function Parent() {
-  const [count, setCount] = useState(0);
-
-  const handleClick = () => {
-    console.log('clicked');
-  };
+      .then(data => setResults(data));
+  }, [query]);
 
   return (
     <>
-      <button onClick={() => setCount(c => c + 1)}>+</button>
-      <Child onClick={handleClick} />
+      <input value={query} onChange={e => setQuery(e.target.value)} />
+      <ul>{results.map(r => <li key={r.id}>{r.label}</li>)}</ul>
     </>
   );
 }
-
-const Child = React.memo(({ onClick }) => {
-  console.log('Child rendered');
-  return <button onClick={onClick}>Action</button>;
-});
 ```
+
+---
+
+## Partie 3 — Custom Hooks & architecture
+
+**Q7.** Citez **deux règles** des Hooks React et expliquez pourquoi un custom hook doit commencer par `use`.
+
+---
+
+**Q8.** Vous voyez cette logique dans plusieurs écrans. Comment la factoriser ? Que retourne votre hook ?
+
+```jsx
+function SettingsPage() {
+  const [value, setValue] = useState(() => localStorage.getItem('theme') ?? 'light');
+
+  useEffect(() => {
+    localStorage.setItem('theme', value);
+  }, [value]);
+
+  // ...
+}
+```
+
+---
+
+**Q9.** Quelle est la différence entre **lever la logique dans un custom hook** et **mettre la donnée dans un Context** ? Dans quels cas préférez-vous l'un ou l'autre ?
+
+---
+
+## Partie 4 — useContext & listes
+
+**Q10.** Ce code affiche toujours `Locale: fr` alors que le bouton devrait basculer en `en`. Expliquez le bug.
+
+```jsx
+const LocaleContext = createContext('fr');
+
+function App() {
+  const [locale, setLocale] = useState('fr');
+
+  return (
+    <LocaleContext value={{ locale, setLocale }}>
+      <Toolbar />
+    </LocaleContext>
+  );
+}
+
+function Toolbar() {
+  const { locale, setLocale } = useContext(LocaleContext);
+  return (
+    <button onClick={() => setLocale(l => (l === 'fr' ? 'en' : 'fr'))}>
+      Locale: {locale}
+    </button>
+  );
+}
+```
+
+---
+
+**Q11.** On supprime le premier élément d'une liste triée. Pourquoi utiliser l'**index** comme `key` peut produire un comportement incorrect (valeurs d'input, focus, animations) ?
+
+```jsx
+{rows.map((row, index) => (
+  <input key={index} defaultValue={row.label} />
+))}
+```
+
+---
+
+## Partie 5 — Performance & useRef
+
+**Q12.** `ExpensiveChild` se re-rend à chaque frappe dans le champ texte, malgré `React.memo`. Pourquoi ? Proposez une correction.
+
+```jsx
+const ExpensiveChild = React.memo(function ExpensiveChild({ config }) {
+  console.log('render child');
+  return <p>{config.label}</p>;
+});
+
+function Form() {
+  const [name, setName] = useState('');
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <input value={name} onChange={e => setName(e.target.value)} />
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+      <ExpensiveChild config={{ label: `Clics : ${count}` }} />
+    </>
+  );
+}
+```
+
+---
+
+**Q13.** Pourquoi stocke-t-on la **valeur précédente** d'une prop dans un `useRef` plutôt que dans un `useState` ?
+
+```jsx
+function Chat({ messageId }) {
+  const prevId = useRef(messageId);
+
+  useEffect(() => {
+    if (prevId.current !== messageId) {
+      scrollToBottom();
+      prevId.current = messageId;
+    }
+  }, [messageId]);
+}
+```
+
+---
+
+**Q14.** Sans écrire de code : dans quels cas `useMemo` **n'apporte rien** ou peut même être contre-productif ?
 
 ---
 
