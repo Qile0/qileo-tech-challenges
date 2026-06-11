@@ -1,4 +1,3 @@
 # Ignorer tout sauf les corrigés markdown (usage évaluateurs interne)
 *
 !.gitignore
-!*.md
