@@ -17,10 +17,12 @@
 
 ## 🚀 Démarrage
 
+Prérequis : Flutter 3.16+ ([installation](https://docs.flutter.dev/get-started/install))
+
 ```bash
 cd apps/flutter
 flutter pub get
-flutter test
+flutter test test/transaction_list_test.dart
 ```
 
 ## ⚠️ Règles

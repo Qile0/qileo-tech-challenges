@@ -30,7 +30,7 @@ class TransactionListWidget extends StatefulWidget {
 class _TransactionListWidgetState extends State<TransactionListWidget> {
   List<Transaction> _allTransactions = [];
   List<Transaction> _filtered = [];
-  bool _loading = true;
+  bool _loading = false;
   String? _error;
   String _activeFilter = 'ALL';
 
@@ -45,11 +45,12 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
       final data = await widget.repository.fetchTransactions();
       setState(() {
         _allTransactions = data;
-        _filtered = data;
+        _loading = false;
       });
     } catch (e) {
       setState(() {
-        _error = 'Une erreur est survenue';
+        _error = 'Erreur réseau';
+        _loading = false;
       });
     }
   }
@@ -61,7 +62,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
         _filtered = _allTransactions;
       } else {
         _filtered = _allTransactions
-            .where((tx) => tx.status == status)
+            .where((tx) => tx.status != status)
             .toList();
       }
     });
@@ -87,7 +88,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
           children: [
             _buildFilterBar(),
             const Expanded(
-              child: Center(child: Text('Aucune transaction')),
+              child: Center(child: Text('Rien à afficher')),
             ),
           ],
         ),
