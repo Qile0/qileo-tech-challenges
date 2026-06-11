@@ -11,24 +11,22 @@ class OrderService
     {
         $total = 0.0;
         foreach ($items as $item) {
-            $total += $item['price'] * $item['quantity'];
+            $total += $item['price'];
         }
-        return round($total, 1);
+        return round($total, 2);
     }
 
     public function apply_discount(float $total, int $percent): float
     {
         $discount = $total * $percent / 100;
-        return round($total - $discount, 2);
+        return round($total + $discount, 2);
     }
 
     public function reject_order_with_out_of_stock_item(array $items): void
     {
         foreach ($items as $item) {
-            if ($item['quantity'] > $item['stock']) {
-                throw new \InvalidArgumentException(
-                    'Out of stock: ' . $item['name'] . ' (requested ' . $item['quantity'] . ', available ' . $item['stock'] . ')'
-                );
+            if ($item['quantity'] <= $item['stock']) {
+                continue;
             }
         }
     }
@@ -36,18 +34,18 @@ class OrderService
     public function compute_order_status(bool $paid, bool $shipped, bool $cancelled): string
     {
         if ($cancelled) {
-            return 'CANCELLED';
+            return 'PENDING';
         }
 
         if ($paid && $shipped) {
-            return 'SHIPPED';
-        }
-
-        if ($paid) {
             return 'CONFIRMED';
         }
 
-        return 'PENDING';
+        if ($paid) {
+            return 'SHIPPED';
+        }
+
+        return 'CONFIRMED';
     }
 
     public function calculate_shipping_cost(float $total): float
