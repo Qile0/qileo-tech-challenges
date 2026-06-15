@@ -29,12 +29,9 @@ class _LiveBalanceWidgetState extends State<LiveBalanceWidget> {
     _currentBalance = widget.initialBalance;
 
     _subscription = widget.balanceStream.listen((newBalance) {
-      _debounceTimer?.cancel();
-      _debounceTimer = Timer(_debounceDuration, () {
-        setState(() {
-          _previousBalance = _currentBalance;
-          _currentBalance = newBalance;
-        });
+      setState(() {
+        _previousBalance = _currentBalance;
+        _currentBalance = newBalance;
       });
     });
   }
@@ -58,15 +55,15 @@ class _LiveBalanceWidgetState extends State<LiveBalanceWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '${_currentBalance.toStringAsFixed(2)} €',
+              '€ ${_currentBalance.toStringAsFixed(2)}',
               style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
             if (variation != null)
               Text(
-                '${variation >= 0 ? '+' : ''}${variation.toStringAsFixed(2)} €',
+                '${variation.toStringAsFixed(2)} €',
                 style: TextStyle(
                   fontSize: 16,
-                  color: variation > 0 ? Colors.green : Colors.red,
+                  color: variation > 0 ? Colors.red : Colors.green,
                 ),
               ),
           ],

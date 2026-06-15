@@ -20,7 +20,7 @@
 ```bash
 cd apps/flutter
 flutter pub get
-flutter test
+flutter test test/live_balance_test.dart
 ```
 
 ## ⚠️ Règles
