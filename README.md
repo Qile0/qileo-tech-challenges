@@ -4,16 +4,16 @@
 
 ## 🎯 Challenges
 
-**laravel**: KYC Verification — Vérification d'identité et scoring de risque dans un contexte fintech : validation de documents, calcul du niveau de risque et décision KYC.
+**laravel**: Transaction Monitoring — Surveillance AML des transactions fintech : détection de montants élevés, vélocité anormale, structuration et contreparties blacklistées.
 
 ## 🧪 Tests à faire passer
 
-### laravel — KYC Verification
-1. `validate_identity_document()` — Valide un document d'identité
-2. `rejects_expired_document()` — Rejette un document expiré
-3. `compute_kyc_risk_level()` — Calcule le niveau de risque
-4. `approve_kyc_when_all_checks_pass()` — Approuve si tout est valide
-5. `reject_kyc_on_sanctioned_country()` — Rejette un pays sanctionné
+### laravel — Transaction Monitoring
+1. `flags_high_value_transaction()` — Détecte un montant ≥ 10 000 €
+2. `detects_velocity_breach()` — Détecte un seuil de vélocité (5 tx / 24 h)
+3. `detects_structuring_pattern()` — Détecte une structuration (3+ montants entre 9 000 € et 10 000 €)
+4. `evaluate_allows_low_risk_transaction()` — Autorise une transaction à faible risque
+5. `evaluate_blocks_blacklisted_counterparty()` — Bloque une contrepartie blacklistée
 
 ## 🚀 Démarrage
 
@@ -27,7 +27,7 @@ Prérequis : [Docker Desktop](https://www.docker.com/products/docker-desktop/) +
 
 ```bash
 cd apps/laravel
-php artisan test --filter=KycTest   # lancer les tests du challenge
+php artisan test --filter=TransactionMonitoringTest
 php artisan serve                 # app sur http://localhost:8000
 ```
 
@@ -40,7 +40,7 @@ cd apps/laravel
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan test --filter=KycTest
+php artisan test --filter=TransactionMonitoringTest
 ```
 
 ## ⚠️ Règles
