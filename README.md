@@ -20,12 +20,12 @@
 ```bash
 cd apps/flutter
 flutter pub get
-flutter test
+flutter test test/payment_bloc_test.dart
 ```
 
 ## ⚠️ Règles
 
-- ✅ Corrigez les fichiers buggés pour faire passer les tests
+- ✅ Implémentez `lib/bloc/payment_bloc.dart` pour faire passer les tests (approche TDD — tous rouges au départ)
 - ❌ Ne modifiez pas les fichiers de test
 - ❌ Ne supprimez pas les assertions existantes
 

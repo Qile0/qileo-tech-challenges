@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qileo_challenge/payment_bloc.dart';
+import 'package:qileo_challenge/bloc/payment.dart';
 
 void main() {
   late PaymentBloc bloc;

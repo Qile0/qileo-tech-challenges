@@ -7,6 +7,3 @@ Thumbs.db
 
 # Corrigés évaluateurs (les .md peuvent être versionnés en usage interne)
 solutions/*.md
-
-# Laravel
-apps
